@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ялинка штучна «Класична» — 4 800 грн</title>
+  <meta name="description" content="Штучна ялинка «Класична», висота 180 см. Доставка по Україні. Ціна 4 800 грн." />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f4f7f5;
+      color: #1c2b22;
+      line-height: 1.5;
+    }
+    header {
+      background: #0f5132;
+      color: #fff;
+      padding: 22px 16px;
+      text-align: center;
+    }
+    header h1 { font-size: 1.6rem; }
+    header p { opacity: .85; font-size: .95rem; }
+
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 32px 16px 100px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+    @media (max-width: 760px) {
+      .wrap { grid-template-columns: 1fr; gap: 24px; }
+    }
+
+    .photo {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,.08);
+    }
+    .photo img {
+      width: 100%;
+      display: block;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #e3ebe6;
+    }
+
+    .info h2 { font-size: 1.5rem; margin-bottom: 10px; }
+    .price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #0f5132;
+      margin: 14px 0 18px;
+    }
+    .specs {
+      list-style: none;
+      margin-bottom: 22px;
+      border-top: 1px solid #e2e9e4;
+    }
+    .specs li {
+      display: flex;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid #e2e9e4;
+      font-size: .95rem;
+    }
+    .specs li span:first-child { color: #5b6b62; }
+    .specs li span:last-child { font-weight: 600; }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      background: #0f5132;
+      color: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn:hover { background: #146c43; }
+
+    .note {
+      margin-top: 14px;
+      font-size: .85rem;
+      color: #5b6b62;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 10;
+    }
+    .modal.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      padding: 22px;
+      width: 100%;
+      max-width: 420px;
+      max-height: 90vh;
+      overflow: auto;
+    }
+    .modal-box h2 { margin-bottom: 14px; font-size: 1.2rem; }
+    .field { margin: 12px 0; }
+    .field label { display: block; font-size: .85rem; margin-bottom: 4px; color: #5b6b62; }
+    .field input {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #cdd8d1;
+      border-radius: 9px;
+      font-size: 1rem;
+    }
+    .close { float: right; cursor: pointer; font-size: 1.4rem; line-height: 1; color: #888; }
+    .ok { text-align: center; padding: 24px 0; font-size: 1.05rem; color: #0f5132; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎄 Ялинка штучна</h1>
+    <p>Доставка по Україні</p>
+  </header>
+
+  <div class="wrap">
+    <div class="photo">
+      <img src="/img/1.jpg" alt="Ялинка штучна «Класична»" onerror="this.style.opacity=.3" />
+    </div>
+
+    <div class="info">
+      <h2 id="title">Ялинка штучна «Класична»</h2>
+      <div class="price" id="price">4 800 грн</div>
+
+      <ul class="specs">
+        <li><span>Висота</span><span id="height">180 см</span></li>
+        <li><span>Діаметр</span><span id="width">105 см</span></li>
+        <li><span>Колір</span><span id="color">зелений</span></li>
+        <li><span>Тип</span><span>штучна</span></li>
+      </ul>
+
+      <button class="btn" onclick="openModal()">Замовити</button>
+      <div class="note">Менеджер зв'яжеться з вами для підтвердження</div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <span class="close" onclick="closeModal()">×</span>
+      <h2>Оформлення замовлення</h2>
+      <div class="field">
+        <label>Ваше ім'я</label>
+        <input id="name" type="text" placeholder="Іван" />
+      </div>
+      <div class="field">
+        <label>Телефон</label>
+        <input id="phone" type="tel" placeholder="+380..." />
+      </div>
+      <button class="btn" onclick="submitOrder()">Надіслати замовлення</button>
+    </div>
+  </div>
+
+  <script>
+    let product = null;
+
+    fetch('/api/products')
+      .then((r) => r.json())
+      .then((data) => {
+        product = data[0];
+        if (!product) return;
+        document.getElementById('title').textContent = product.title;
+        document.getElementById('price').textContent = product.price;
+        document.getElementById('height').textContent = product.height + ' см';
+        document.getElementById('width').textContent = product.width + ' см';
+        document.getElementById('color').textContent = product.color;
+        document.querySelector('.photo img').src = product.image;
+        document.querySelector('.photo img').alt = product.title;
+      });
+
+    function openModal() {
+      document.getElementById('modal').classList.add('open');
+    }
+    function closeModal() {
+      document.getElementById('modal').classList.remove('open');
+    }
+
+    async function submitOrder() {
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      if (!name || !phone) return alert('Введіть ім\'я та телефон');
+      if (!product) return alert('Товар не завантажено');
+
+      const items = [{ title: product.title, price: product.price, qty: 1 }];
+
+      const res = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, phone, items }),
+      });
+      const data = await res.json();
+
+      if (data.ok) {
+        document.querySelector('.modal-box').innerHTML =
+          '<div class="ok">✅ Замовлення надіслано!<br>Ми зв\'яжемося з вами.</div>';
+      } else {
+        alert(data.error || 'Помилка');
+      }
+    }
+  </script>
+</body>
+</html>
